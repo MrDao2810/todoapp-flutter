@@ -12,11 +12,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter layout demo',
+      title: 'Todo app',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'Todo App'),
     );
   }
 }
@@ -67,7 +67,6 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
     Color color = Theme.of(context).primaryColor;
-
     // Start -- Create button task-filter --
     Widget taskFilter = Container(
       padding: const EdgeInsets.all(25),
@@ -122,34 +121,42 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
     );
+    // End -- Create input Search bar --
 
-    // Start -- Create input Search bar --
-
-    Widget textSection = const Padding(
-      padding: EdgeInsets.all(32),
-      child: Text(
-        'Lake Oeschinen lies at the foot of the Blüemlisalp in the Bernese '
-            'Alps. Situated 1,578 meters above sea level, it is one of the '
-            'larger Alpine Lakes. A gondola ride from Kandersteg, followed by a '
-            'half-hour walk through pastures and pine forest, leads you to the '
-            'lake, which warms to 20 degrees Celsius in the summer. Activities '
-            'enjoyed here include rowing, and riding the summer toboggan run.',
-        softWrap: true,
+    // Start -- Create Task list --
+    Widget taskList = Container(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          const TextField(
+            decoration: InputDecoration(
+              border: OutlineInputBorder(),
+              hintText: 'Task List',
+            ),
+          ),
+          Row(
+            children: const [
+              Text('Hello Phong!')
+            ],
+          ),
+        ],
       ),
     );
+
+    // End -- Create Task list --
+
     return Scaffold(
       appBar: AppBar(
-
         title: Text(widget.title),
       ),
       body: Center(
-
         child: ListView(
           children: [
             titleSection,
             taskFilter,
             searchBar,
-            textSection,
+            taskList,
           ],
         ),
       ),
