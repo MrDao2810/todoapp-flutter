@@ -68,6 +68,51 @@ class _MyHomePageState extends State<MyHomePage> {
     );
     Color color = Theme.of(context).primaryColor;
 
+    // Start -- Create button task-filter --
+    Widget taskFilter = Container(
+      padding: const EdgeInsets.all(25),
+      child: Row(
+        children: [
+          Container(
+            margin: const EdgeInsets.all(25),
+            // ignore: deprecated_member_use
+            child: FlatButton(
+              color: Colors.blueAccent,
+              textColor: Colors.white,
+              onPressed: () {},
+              child: const Text('Total',
+                style: TextStyle(fontSize: 20.0),),
+            ),
+          ),
+          Container(
+            margin: const EdgeInsets.all(25),
+            // ignore: deprecated_member_use
+            child: FlatButton(
+              color: Colors.blueAccent,
+              textColor: Colors.white,
+              onPressed: () {},
+              child: const Text('Done',
+                style: TextStyle(fontSize: 20.0),),
+            ),
+          ),
+          Container(
+            margin: const EdgeInsets.all(25),
+            // ignore: deprecated_member_use
+            child: FlatButton(
+              color: Colors.blueAccent,
+              textColor: Colors.white,
+              onPressed: () {},
+              child: const Text('Not Done',
+                style: TextStyle(fontSize: 20.0),),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    // End -- Create button task-filter --
+
+    // Start -- Create input Search bar --
     Widget searchBar = const Padding(
       padding: EdgeInsets.symmetric(horizontal: 8, vertical: 16),
       child: TextField(
@@ -77,6 +122,8 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
     );
+
+    // Start -- Create input Search bar --
 
     Widget textSection = const Padding(
       padding: EdgeInsets.all(32),
@@ -100,6 +147,7 @@ class _MyHomePageState extends State<MyHomePage> {
         child: ListView(
           children: [
             titleSection,
+            taskFilter,
             searchBar,
             textSection,
           ],
