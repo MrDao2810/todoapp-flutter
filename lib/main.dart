@@ -32,6 +32,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
+  List<String> todoList = [];
 
   void _incrementCounter() {
     setState(() {
@@ -42,7 +43,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     Widget titleSection = Container(
-      padding: const EdgeInsets.all(32),
+      padding: const EdgeInsets.all(10),
       child: Row(
         children: [
           Expanded(
@@ -69,40 +70,42 @@ class _MyHomePageState extends State<MyHomePage> {
     Color color = Theme.of(context).primaryColor;
     // Start -- Create button task-filter --
     Widget taskFilter = Container(
-      padding: const EdgeInsets.all(25),
+      padding: const EdgeInsets.all(10),
       child: Row(
         children: [
           Container(
-            margin: const EdgeInsets.all(25),
+            margin: const EdgeInsets.all(10),
             // ignore: deprecated_member_use
-            child: FlatButton(
-              color: Colors.blueAccent,
-              textColor: Colors.white,
-              onPressed: () {},
-              child: const Text('Total',
-                style: TextStyle(fontSize: 20.0),),
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                primary: Colors.blue, // background
+                onPrimary: Colors.white, // foreground
+              ),
+              onPressed: () { },
+              child: const Text('Total'),
             ),
           ),
           Container(
-            margin: const EdgeInsets.all(25),
+            margin: const EdgeInsets.all(10),
             // ignore: deprecated_member_use
-            child: FlatButton(
-              color: Colors.blueAccent,
-              textColor: Colors.white,
-              onPressed: () {},
-              child: const Text('Done',
-                style: TextStyle(fontSize: 20.0),),
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                primary: Colors.blue, // background
+                onPrimary: Colors.white, // foreground
+              ),
+              onPressed: () { },
+              child: const Text('Done'),
             ),
           ),
           Container(
-            margin: const EdgeInsets.all(25),
-            // ignore: deprecated_member_use
-            child: FlatButton(
-              color: Colors.blueAccent,
-              textColor: Colors.white,
-              onPressed: () {},
-              child: const Text('Not Done',
-                style: TextStyle(fontSize: 20.0),),
+            margin: const EdgeInsets.all(10),
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                primary: Colors.blue, // background
+                onPrimary: Colors.white, // foreground
+              ),
+              onPressed: () { },
+              child: const Text('Not Done'),
             ),
           ),
         ],
@@ -124,21 +127,43 @@ class _MyHomePageState extends State<MyHomePage> {
     // End -- Create input Search bar --
 
     // Start -- Create Task list --
+    TextEditingController valueTaskList = TextEditingController();
     Widget taskList = Container(
-      padding: const EdgeInsets.all(20),
+    padding: const EdgeInsets.all(10),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          const TextField(
-            decoration: InputDecoration(
+           TextField(
+            controller: valueTaskList,
+            decoration: const InputDecoration(
               border: OutlineInputBorder(),
               hintText: 'Task List',
             ),
           ),
-          Row(
-            children: const [
-              Text('Hello Phong!')
-            ],
+          Container(
+            margin: const EdgeInsets.all(10),
+            // ignore: deprecated_member_use
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                primary: Colors.blue, // background
+                onPrimary: Colors.white, // foreground
+              ),
+              onPressed: () {
+                setState(() {
+                  if (valueTaskList.text != '' && !todoList.contains(valueTaskList.text)) {
+                    todoList.add(valueTaskList.text);
+                  }
+                });
+              },
+              child: const Text('Add'),
+            ),
+          ),
+          Column(
+            children: List.generate(todoList.length, (index) {
+              return Text(
+                todoList[index].toString(),
+              );
+            }),
           ),
         ],
       ),
@@ -160,11 +185,6 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
