@@ -29,10 +29,16 @@ class MyHomePage extends StatefulWidget {
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
+class Task{ //modal class for Person object
+  bool status;
+  String content;
+  Task({required this.status, required this.content});
+}
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
-  List<String> todoList = [];
+  List<Task> todoList = [];
+  bool isChecked = false;
 
   void _incrementCounter() {
     setState(() {
@@ -150,9 +156,11 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
               onPressed: () {
                 setState(() {
-                  if (valueTaskList.text != '' && !todoList.contains(valueTaskList.text)) {
-                    todoList.add(valueTaskList.text);
-                  }
+                  Task task = Task(status: isChecked, content: valueTaskList.text);
+                  // if (valueTaskList.text != '' && !todoList.contains(valueTaskList.text)) {
+                  //   todoList.add(valueTaskList.text);
+                  // }
+                  todoList.add(task);
                 });
               },
               child: const Text('Add'),
@@ -160,8 +168,32 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           Column(
             children: List.generate(todoList.length, (index) {
-              return Text(
-                todoList[index].toString(),
+              // const isChecked = totoList[index].status;
+              return ListTile(
+                // Create checkBox
+                leading: Checkbox(
+                  value: todoList[index].status,
+                  onChanged: (value) {
+                    setState((){
+                      todoList[index].status = !todoList[index].status;
+                    });
+                  },
+                ),
+                // Text TaskList
+                title: Text(todoList[index].content.toString(),),
+                // Create delete TaskList
+                trailing: GestureDetector(
+                  onTap: () {
+                    setState((){
+                      todoList.removeAt(index);
+                    });
+                  },
+                  child: const Icon(
+                    Icons.delete,
+                    color: Colors.blue,
+                  ),
+                ),
+
               );
             }),
           ),
