@@ -191,17 +191,62 @@ class _MyHomePageState extends State<MyHomePage> {
                 // Text TaskList
                 title: Text(todoList[index].content.toString(),),
                 // Create delete TaskList
-                trailing: GestureDetector(
-                  onTap: () {
-                    setState((){
-                      todoList.removeAt(index);
-                    });
-                  },
-                  child: const Icon(
-                    Icons.delete,
-                    color: Colors.blue,
-                  ),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(onPressed: (){
+                      setState((){
+                        if (index > 0) {
+                          var temp = todoList[index];
+                          todoList[index] = todoList[index - 1];
+                          todoList[index - 1] = temp;
+                        }
+                      });
+                    },
+                      icon: const Icon(
+                        Icons.upload_sharp,
+                        color: Colors.black54,
+                      ),
+                    ),
+                    IconButton(onPressed: (){
+                      setState((){
+                        if (index < todoList.length - 1) {
+                          var temp = todoList[index];
+                          todoList[index] = todoList[index + 1];
+                          todoList[index + 1] = temp;
+                        }
+                      });
+                    },
+                      icon: const Icon(
+                        Icons.file_download_sharp,
+                        color: Colors.black54,
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        setState((){
+                          todoList.removeAt(index);
+                        });
+                      },
+                      icon: const Icon(
+                        Icons.delete,
+                        color: Colors.black54,
+                      ),
+                    ),
+                  ],
                 ),
+                // trailing: GestureDetector(
+                //   onTap: () {
+                //     setState((){
+                //
+                //     });
+                //   },
+                //   child: const Icon(
+                //     Icons.delete,
+                //     color: Colors.blue,
+                //   ),
+                // ),
+
               );
             }),
           ),
