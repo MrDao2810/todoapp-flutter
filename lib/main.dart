@@ -29,6 +29,8 @@ class MyHomePage extends StatefulWidget {
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
+
+// Object Task
 class Task{ //modal class for Person object
   bool status;
   String content;
@@ -39,7 +41,7 @@ class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
   List<Task> todoList = [];
   bool isChecked = false;
-
+  int count = 0;
   void _incrementCounter() {
     setState(() {
       _counter++;
@@ -48,6 +50,13 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    // Count Done
+    count = 0;
+    for (var task in todoList) {
+      if(task.status) {
+        count++;
+      }
+    }
     Widget titleSection = Container(
       padding: const EdgeInsets.all(10),
       child: Row(
@@ -74,6 +83,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
     Color color = Theme.of(context).primaryColor;
+
     // Start -- Create button task-filter --
     Widget taskFilter = Container(
       padding: const EdgeInsets.all(10),
@@ -88,7 +98,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 onPrimary: Colors.white, // foreground
               ),
               onPressed: () { },
-              child: const Text('Total'),
+              child: Text('Total ${todoList.length}'),
             ),
           ),
           Container(
@@ -100,7 +110,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 onPrimary: Colors.white, // foreground
               ),
               onPressed: () { },
-              child: const Text('Done'),
+              child: Text('Done $count'),
             ),
           ),
           Container(
@@ -111,7 +121,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 onPrimary: Colors.white, // foreground
               ),
               onPressed: () { },
-              child: const Text('Not Done'),
+              child: Text('Not Done ${todoList.length - count}'),
             ),
           ),
         ],
@@ -130,6 +140,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
     );
+
     // End -- Create input Search bar --
 
     // Start -- Create Task list --
@@ -157,10 +168,9 @@ class _MyHomePageState extends State<MyHomePage> {
               onPressed: () {
                 setState(() {
                   Task task = Task(status: isChecked, content: valueTaskList.text);
-                  // if (valueTaskList.text != '' && !todoList.contains(valueTaskList.text)) {
-                  //   todoList.add(valueTaskList.text);
-                  // }
-                  todoList.add(task);
+                  if (valueTaskList.text != '') {
+                      todoList.add(task);
+                  }
                 });
               },
               child: const Text('Add'),
@@ -168,7 +178,6 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           Column(
             children: List.generate(todoList.length, (index) {
-              // const isChecked = totoList[index].status;
               return ListTile(
                 // Create checkBox
                 leading: Checkbox(
@@ -193,14 +202,12 @@ class _MyHomePageState extends State<MyHomePage> {
                     color: Colors.blue,
                   ),
                 ),
-
               );
             }),
           ),
         ],
       ),
     );
-
     // End -- Create Task list --
 
     return Scaffold(
