@@ -201,6 +201,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           Column(
             children: List.generate(displayedTasks.length, (index) {
+              int taskIndex = todoList.indexOf(displayedTasks[index]);
               return ListTile(
                 // Create checkBox
                 leading: Checkbox(
@@ -220,10 +221,10 @@ class _MyHomePageState extends State<MyHomePage> {
                     IconButton(
                       onPressed: () {
                         setState(() {
-                          if (index > 0) {
-                            var temp = displayedTasks[index];
-                            displayedTasks[index] = displayedTasks[index - 1];
-                            displayedTasks[index - 1] = temp;
+                          if (taskIndex > 0) {
+                            var temp = todoList[taskIndex];
+                            todoList[taskIndex] = todoList[taskIndex - 1];
+                            todoList[taskIndex - 1] = temp;
                           }
                         });
                       },
@@ -234,10 +235,10 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                     IconButton(onPressed: () {
                       setState(() {
-                        if (index < displayedTasks.length - 1) {
-                          var temp = displayedTasks[index];
-                          displayedTasks[index] = displayedTasks[index + 1];
-                          displayedTasks[index + 1] = temp;
+                        if (taskIndex < todoList.length - 1) {
+                          var temp = todoList[taskIndex];
+                          todoList[taskIndex] = todoList[taskIndex + 1];
+                          todoList[taskIndex + 1] = temp;
                         }
                       });
                     },
@@ -249,7 +250,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     IconButton(
                       onPressed: () {
                         setState(() {
-                          displayedTasks.removeAt(index);
+                          todoList.removeAt(taskIndex);
                         });
                       },
                       icon: const Icon(
