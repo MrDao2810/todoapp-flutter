@@ -40,8 +40,10 @@ class Task{ //modal class for Person object
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
   List<Task> todoList = [];
+  String currentStatus = 'all';
   bool isChecked = false;
   int count = 0;
+
   void _incrementCounter() {
     setState(() {
       _counter++;
@@ -50,6 +52,14 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    List<Task> displayedTasks;
+    if (currentStatus == 'all') {
+      displayedTasks = todoList;
+    } else if (currentStatus == 'done') {
+      displayedTasks = todoList.where((element) => element.status == true).toList();
+    } else {
+      displayedTasks = todoList.where((element) => element.status == false).toList();
+    }
     // Count Done
     count = 0;
     for (var task in todoList) {
@@ -57,6 +67,7 @@ class _MyHomePageState extends State<MyHomePage> {
         count++;
       }
     }
+
     Widget titleSection = Container(
       padding: const EdgeInsets.all(10),
       child: Row(
@@ -97,7 +108,11 @@ class _MyHomePageState extends State<MyHomePage> {
                 primary: Colors.blue, // background
                 onPrimary: Colors.white, // foreground
               ),
-              onPressed: () { },
+              onPressed: () {
+                setState(() {
+                  currentStatus = 'all';
+                });
+              },
               child: Text('Total ${todoList.length}'),
             ),
           ),
@@ -109,7 +124,11 @@ class _MyHomePageState extends State<MyHomePage> {
                 primary: Colors.blue, // background
                 onPrimary: Colors.white, // foreground
               ),
-              onPressed: () { },
+              onPressed: () {
+                setState(() {
+                  currentStatus = 'done';
+                });
+              },
               child: Text('Done $count'),
             ),
           ),
@@ -120,7 +139,11 @@ class _MyHomePageState extends State<MyHomePage> {
                 primary: Colors.blue, // background
                 onPrimary: Colors.white, // foreground
               ),
-              onPressed: () { },
+              onPressed: () {
+                setState(() {
+                  currentStatus = 'undone';
+                });
+              },
               child: Text('Not Done ${todoList.length - count}'),
             ),
           ),
@@ -169,7 +192,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 setState(() {
                   Task task = Task(status: isChecked, content: valueTaskList.text);
                   if (valueTaskList.text != '') {
-                      todoList.add(task);
+                    todoList.add(task);
                   }
                 });
               },
@@ -177,43 +200,44 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ),
           Column(
-            children: List.generate(todoList.length, (index) {
+            children: List.generate(displayedTasks.length, (index) {
               return ListTile(
                 // Create checkBox
                 leading: Checkbox(
-                  value: todoList[index].status,
+                  value: displayedTasks[index].status,
                   onChanged: (value) {
-                    setState((){
-                      todoList[index].status = !todoList[index].status;
+                    setState(() {
+                      displayedTasks[index].status = !displayedTasks[index].status;
                     });
                   },
                 ),
                 // Text TaskList
-                title: Text(todoList[index].content.toString(),),
+                title: Text(displayedTasks[index].content.toString(),),
                 // Create delete TaskList
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    IconButton(onPressed: (){
-                      setState((){
-                        if (index > 0) {
-                          var temp = todoList[index];
-                          todoList[index] = todoList[index - 1];
-                          todoList[index - 1] = temp;
-                        }
-                      });
-                    },
+                    IconButton(
+                      onPressed: () {
+                        setState(() {
+                          if (index > 0) {
+                            var temp = displayedTasks[index];
+                            displayedTasks[index] = displayedTasks[index - 1];
+                            displayedTasks[index - 1] = temp;
+                          }
+                        });
+                      },
                       icon: const Icon(
                         Icons.upload_sharp,
                         color: Colors.black54,
                       ),
                     ),
-                    IconButton(onPressed: (){
-                      setState((){
-                        if (index < todoList.length - 1) {
-                          var temp = todoList[index];
-                          todoList[index] = todoList[index + 1];
-                          todoList[index + 1] = temp;
+                    IconButton(onPressed: () {
+                      setState(() {
+                        if (index < displayedTasks.length - 1) {
+                          var temp = displayedTasks[index];
+                          displayedTasks[index] = displayedTasks[index + 1];
+                          displayedTasks[index + 1] = temp;
                         }
                       });
                     },
@@ -224,8 +248,8 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                     IconButton(
                       onPressed: () {
-                        setState((){
-                          todoList.removeAt(index);
+                        setState(() {
+                          displayedTasks.removeAt(index);
                         });
                       },
                       icon: const Icon(
@@ -235,18 +259,6 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                   ],
                 ),
-                // trailing: GestureDetector(
-                //   onTap: () {
-                //     setState((){
-                //
-                //     });
-                //   },
-                //   child: const Icon(
-                //     Icons.delete,
-                //     color: Colors.blue,
-                //   ),
-                // ),
-
               );
             }),
           ),
@@ -262,7 +274,7 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Center(
         child: ListView(
           children: [
-            titleSection,
+            // titleSection,
             taskFilter,
             searchBar,
             taskList,
