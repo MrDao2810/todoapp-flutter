@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:project_todoapp/task.dart';
 
 void main() {
   runApp(const MyApp());
@@ -30,19 +31,12 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-// Object Task
-class Task{ //modal class for Person object
-  bool status;
-  String content;
-  Task({required this.status, required this.content});
-}
-
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
   List<Task> todoList = [];
   String currentStatus = 'all';
   bool isChecked = false;
-  int count = 0;
+  int doneCount = 0;
 
   void _incrementCounter() {
     setState(() {
@@ -56,18 +50,12 @@ class _MyHomePageState extends State<MyHomePage> {
     if (currentStatus == 'all') {
       displayedTasks = todoList;
     } else if (currentStatus == 'done') {
-      displayedTasks = todoList.where((element) => element.status == true).toList();
+      displayedTasks = todoList.where((element) => element.status).toList();
     } else {
-      displayedTasks = todoList.where((element) => element.status == false).toList();
+      displayedTasks = todoList.where((element) => !element.status).toList();
     }
     // Count Done
-    count = 0;
-    for (var task in todoList) {
-      if(task.status) {
-        count++;
-      }
-    }
-
+    doneCount = todoList.where((element) => element.status).toList().length;
     Widget titleSection = Container(
       padding: const EdgeInsets.all(10),
       child: Row(
@@ -95,58 +83,36 @@ class _MyHomePageState extends State<MyHomePage> {
     );
     Color color = Theme.of(context).primaryColor;
 
+    Widget _generateButton({required String value, required int taskCount}) {
+      const normalColor = Colors.blue;
+      const activeColor = Colors.deepOrange;
+      return Container(
+        margin: const EdgeInsets.all(10),
+        // ignore: deprecated_member_use
+        child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            primary: currentStatus == value ? activeColor : normalColor, // background
+            onPrimary: Colors.white, // foreground
+          ),
+          onPressed: () {
+            setState(() {
+              currentStatus = value;
+            });
+          },
+          child: Text('$value $taskCount'),
+        ),
+      );
+    }
+
+
     // Start -- Create button task-filter --
     Widget taskFilter = Container(
       padding: const EdgeInsets.all(10),
       child: Row(
         children: [
-          Container(
-            margin: const EdgeInsets.all(10),
-            // ignore: deprecated_member_use
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                primary: Colors.blue, // background
-                onPrimary: Colors.white, // foreground
-              ),
-              onPressed: () {
-                setState(() {
-                  currentStatus = 'all';
-                });
-              },
-              child: Text('Total ${todoList.length}'),
-            ),
-          ),
-          Container(
-            margin: const EdgeInsets.all(10),
-            // ignore: deprecated_member_use
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                primary: Colors.blue, // background
-                onPrimary: Colors.white, // foreground
-              ),
-              onPressed: () {
-                setState(() {
-                  currentStatus = 'done';
-                });
-              },
-              child: Text('Done $count'),
-            ),
-          ),
-          Container(
-            margin: const EdgeInsets.all(10),
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                primary: Colors.blue, // background
-                onPrimary: Colors.white, // foreground
-              ),
-              onPressed: () {
-                setState(() {
-                  currentStatus = 'undone';
-                });
-              },
-              child: Text('Not Done ${todoList.length - count}'),
-            ),
-          ),
+          _generateButton(value: 'all', taskCount: todoList.length),
+          _generateButton(value: 'done', taskCount: doneCount),
+          _generateButton(value: 'undone', taskCount: todoList.length - doneCount)
         ],
       ),
     );
@@ -176,7 +142,6 @@ class _MyHomePageState extends State<MyHomePage> {
            TextField(
             controller: valueTaskList,
             decoration: const InputDecoration(
-              border: OutlineInputBorder(),
               hintText: 'Task List',
             ),
           ),
