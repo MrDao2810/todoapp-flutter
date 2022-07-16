@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:project_todoapp/search.dart';
 import 'package:project_todoapp/task.dart';
 
 void main() {
@@ -34,25 +35,34 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
   List<Task> todoList = [];
+  List<Task> displayedTasks = [];
   String currentStatus = 'all';
   bool isChecked = false;
   int doneCount = 0;
-
+  String searchQuery = '';
   void _incrementCounter() {
     setState(() {
       _counter++;
     });
   }
 
+  void _handleSearch(String query) {
+    if(query.isNotEmpty) {
+      setState(() {
+        debugPrint(query);
+        displayedTasks = displayedTasks.where((element) => element.content.toLowerCase().contains(searchQuery.toLowerCase())).toList();
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    List<Task> displayedTasks;
-    if (currentStatus == 'all') {
-      displayedTasks = todoList;
+    if (currentStatus == 'undone') {
+      displayedTasks = todoList.where((element) => !element.status).toList();
     } else if (currentStatus == 'done') {
       displayedTasks = todoList.where((element) => element.status).toList();
     } else {
-      displayedTasks = todoList.where((element) => !element.status).toList();
+      displayedTasks = todoList;
     }
     // Count Done
     doneCount = todoList.where((element) => element.status).toList().length;
@@ -119,30 +129,24 @@ class _MyHomePageState extends State<MyHomePage> {
 
     // End -- Create button task-filter --
 
-    // Start -- Create input Search bar --
-    Widget searchBar = const Padding(
-      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-      child: TextField(
-        decoration: InputDecoration(
-          border: OutlineInputBorder(),
-          hintText: 'Search Bar',
-        ),
-      ),
+    Widget searchBar = Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+      child: SearchTask(onChange: _handleSearch),
     );
 
     // End -- Create input Search bar --
 
     // Start -- Create Task list --
-    TextEditingController valueTaskList = TextEditingController();
+    TextEditingController addTaskText = TextEditingController();
     Widget taskList = Container(
     padding: const EdgeInsets.all(10),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
            TextField(
-            controller: valueTaskList,
+            controller: addTaskText,
             decoration: const InputDecoration(
-              hintText: 'Task List',
+              hintText: 'Add Task',
             ),
           ),
           Container(
@@ -155,8 +159,8 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
               onPressed: () {
                 setState(() {
-                  Task task = Task(status: isChecked, content: valueTaskList.text);
-                  if (valueTaskList.text != '') {
+                  Task task = Task(status: isChecked, content: addTaskText.text);
+                  if (addTaskText.text != '') {
                     todoList.add(task);
                   }
                 });
@@ -195,7 +199,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       },
                       icon: const Icon(
                         Icons.upload_sharp,
-                        color: Colors.black54,
+                        color: Colors.redAccent,
                       ),
                     ),
                     IconButton(onPressed: () {
@@ -209,7 +213,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     },
                       icon: const Icon(
                         Icons.file_download_sharp,
-                        color: Colors.black54,
+                        color: Colors.redAccent,
                       ),
                     ),
                     IconButton(
@@ -220,7 +224,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       },
                       icon: const Icon(
                         Icons.delete,
-                        color: Colors.black54,
+                        color: Colors.redAccent,
                       ),
                     ),
                   ],
