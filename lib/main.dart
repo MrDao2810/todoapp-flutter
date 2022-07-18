@@ -170,6 +170,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           Column(
             children: List.generate(displayedTasks.length, (index) {
+              final textDecoration = displayedTasks[index].status ? TextDecoration.lineThrough : TextDecoration.none;
               int taskIndex = todoList.indexOf(displayedTasks[index]);
               return ListTile(
                 // Create checkBox
@@ -182,7 +183,12 @@ class _MyHomePageState extends State<MyHomePage> {
                   },
                 ),
                 // Text TaskList
-                title: Text(displayedTasks[index].content.toString(),),
+                title: Text(
+                  displayedTasks[index].content.toString(),
+                  style: TextStyle(
+                    decoration: textDecoration,
+                  ),
+                ),
                 // Create delete TaskList
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
