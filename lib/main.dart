@@ -1,4 +1,4 @@
-
+import 'package:reorderables/reorderables.dart';
 import 'package:flutter/material.dart';
 import 'package:project_todoapp/search.dart';
 import 'package:project_todoapp/task.dart';
@@ -47,10 +47,14 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _handleSearch(String query) {
-    if(query.isNotEmpty) {
+    if (query.isNotEmpty) {
       setState(() {
         debugPrint(query);
-        displayedTasks = displayedTasks.where((element) => element.content.toLowerCase().contains(searchQuery.toLowerCase())).toList();
+        displayedTasks = displayedTasks
+            .where((element) => element.content
+                .toLowerCase()
+                .contains(searchQuery.toLowerCase()))
+            .toList();
       });
     }
   }
@@ -66,6 +70,97 @@ class _MyHomePageState extends State<MyHomePage> {
     }
     // Count Done
     doneCount = todoList.where((element) => element.status).toList().length;
+
+    final taskListRows = List.generate(displayedTasks.length, (index) {
+      final textDecoration = displayedTasks[index].status
+          ? TextDecoration.lineThrough
+          : TextDecoration.none;
+      int taskIndex = todoList.indexOf(displayedTasks[index]);
+      return ReorderableTableRow(
+        key: ObjectKey(displayedTasks[index]),
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            children: [
+              Checkbox(
+                value: displayedTasks[index].status,
+                onChanged: (value) {
+                  setState(() {
+                    displayedTasks[index].status = !displayedTasks[index].status;
+                  });
+                },
+              ),
+              Text(
+                displayedTasks[index].content.toString(),
+                style: TextStyle(
+                  decoration: textDecoration,
+                ),
+              ),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      setState(() {
+                        if (taskIndex > 0) {
+                          var temp = todoList[taskIndex];
+                          todoList[taskIndex] = todoList[taskIndex - 1];
+                          todoList[taskIndex - 1] = temp;
+                        }
+                      });
+                    },
+                    icon: const Icon(
+                      Icons.upload_sharp,
+                      color: Colors.redAccent,
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      setState(() {
+                        if (taskIndex < todoList.length - 1) {
+                          var temp = todoList[taskIndex];
+                          todoList[taskIndex] = todoList[taskIndex + 1];
+                          todoList[taskIndex + 1] = temp;
+                        }
+                      });
+                    },
+                    icon: const Icon(
+                      Icons.file_download_sharp,
+                      color: Colors.redAccent,
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      setState(() {
+                        todoList.removeAt(taskIndex);
+                      });
+                    },
+                    icon: const Icon(
+                      Icons.delete,
+                      color: Colors.redAccent,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ],
+      );
+    });
+
+    void _onReorder(int oldIndex, int newIndex) {
+      setState(() {
+        oldIndex = todoList.indexOf(displayedTasks[oldIndex]);
+        newIndex = todoList.indexOf(displayedTasks[newIndex]);
+        if(oldIndex >= 0 && newIndex >= 0) {
+          final temp = todoList[oldIndex];
+          todoList[oldIndex] = todoList[newIndex];
+          todoList[newIndex] = temp;
+        }
+      });
+    }
+
     Widget titleSection = Container(
       padding: const EdgeInsets.all(10),
       child: Row(
@@ -101,7 +196,9 @@ class _MyHomePageState extends State<MyHomePage> {
         // ignore: deprecated_member_use
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
-            primary: currentStatus == value ? activeColor : normalColor, // background
+            primary: currentStatus == value
+                ? activeColor
+                : normalColor, // background
             onPrimary: Colors.white, // foreground
           ),
           onPressed: () {
@@ -114,7 +211,6 @@ class _MyHomePageState extends State<MyHomePage> {
       );
     }
 
-
     // Start -- Create button task-filter --
     Widget taskFilter = Container(
       padding: const EdgeInsets.all(10),
@@ -122,7 +218,8 @@ class _MyHomePageState extends State<MyHomePage> {
         children: [
           _generateButton(value: 'all', taskCount: todoList.length),
           _generateButton(value: 'done', taskCount: doneCount),
-          _generateButton(value: 'undone', taskCount: todoList.length - doneCount)
+          _generateButton(
+              value: 'undone', taskCount: todoList.length - doneCount)
         ],
       ),
     );
@@ -139,11 +236,11 @@ class _MyHomePageState extends State<MyHomePage> {
     // Start -- Create Task list --
     TextEditingController addTaskText = TextEditingController();
     Widget taskList = Container(
-    padding: const EdgeInsets.all(10),
+      padding: const EdgeInsets.all(10),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-           TextField(
+          TextField(
             controller: addTaskText,
             decoration: const InputDecoration(
               hintText: 'Add Task',
@@ -159,7 +256,8 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
               onPressed: () {
                 setState(() {
-                  Task task = Task(status: isChecked, content: addTaskText.text);
+                  Task task =
+                      Task(status: isChecked, content: addTaskText.text);
                   if (addTaskText.text != '') {
                     todoList.add(task);
                   }
@@ -168,75 +266,9 @@ class _MyHomePageState extends State<MyHomePage> {
               child: const Text('Add'),
             ),
           ),
-          Column(
-            children: List.generate(displayedTasks.length, (index) {
-              final textDecoration = displayedTasks[index].status ? TextDecoration.lineThrough : TextDecoration.none;
-              int taskIndex = todoList.indexOf(displayedTasks[index]);
-              return ListTile(
-                // Create checkBox
-                leading: Checkbox(
-                  value: displayedTasks[index].status,
-                  onChanged: (value) {
-                    setState(() {
-                      displayedTasks[index].status = !displayedTasks[index].status;
-                    });
-                  },
-                ),
-                // Text TaskList
-                title: Text(
-                  displayedTasks[index].content.toString(),
-                  style: TextStyle(
-                    decoration: textDecoration,
-                  ),
-                ),
-                // Create delete TaskList
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    IconButton(
-                      onPressed: () {
-                        setState(() {
-                          if (taskIndex > 0) {
-                            var temp = todoList[taskIndex];
-                            todoList[taskIndex] = todoList[taskIndex - 1];
-                            todoList[taskIndex - 1] = temp;
-                          }
-                        });
-                      },
-                      icon: const Icon(
-                        Icons.upload_sharp,
-                        color: Colors.redAccent,
-                      ),
-                    ),
-                    IconButton(onPressed: () {
-                      setState(() {
-                        if (taskIndex < todoList.length - 1) {
-                          var temp = todoList[taskIndex];
-                          todoList[taskIndex] = todoList[taskIndex + 1];
-                          todoList[taskIndex + 1] = temp;
-                        }
-                      });
-                    },
-                      icon: const Icon(
-                        Icons.file_download_sharp,
-                        color: Colors.redAccent,
-                      ),
-                    ),
-                    IconButton(
-                      onPressed: () {
-                        setState(() {
-                          todoList.removeAt(taskIndex);
-                        });
-                      },
-                      icon: const Icon(
-                        Icons.delete,
-                        color: Colors.redAccent,
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            }),
+          ReorderableTable(
+            onReorder: _onReorder,
+            children: taskListRows,
           ),
         ],
       ),
