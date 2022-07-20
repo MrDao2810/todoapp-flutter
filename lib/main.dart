@@ -1,13 +1,17 @@
+import 'dart:convert';
+
 import 'package:reorderables/reorderables.dart';
 import 'package:flutter/material.dart';
 import 'package:project_todoapp/search.dart';
 import 'package:project_todoapp/task.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  static String storageTodolist = 'todolist'; // MyApp.storageTodolist = 'key' : lấy key
   const MyApp({Key? key}) : super(key: key);
 
   // This widget is the root of your application.
@@ -33,18 +37,12 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
   List<Task> todoList = [];
   List<Task> displayedTasks = [];
   String currentStatus = 'all';
   bool isChecked = false;
   int doneCount = 0;
   String searchQuery = '';
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
 
   void _handleSearch(String query) {
     if (query.isNotEmpty) {
@@ -55,12 +53,44 @@ class _MyHomePageState extends State<MyHomePage> {
                 .toLowerCase()
                 .contains(searchQuery.toLowerCase()))
             .toList();
+        _saveTaskList();
       });
     }
   }
+  // Save data SharedPreferences
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchList();
+  }
+  // -- Save Data TaskList --
+  Future _fetchList() async {
+    List<Task> todoListTmp = [];
+    final prefs = await SharedPreferences.getInstance();
+    var test = jsonEncode(prefs.getString(MyApp.storageTodolist));
+    List<dynamic> todoListDB = jsonDecode(jsonDecode(test));
+    for (var task in todoListDB) {
+      var taskNew = Task(status: false, content: "2");
+      taskNew.fromJson(task);
+      todoListTmp.add(taskNew);
+    }
+    setState(() {
+      todoList = [...todoListTmp];
+    });
+  }
+  Future<void> _saveTaskList() async {
+    // obtain shared preferences
+    final prefs = await SharedPreferences.getInstance();
+    String todoListJson = jsonEncode(todoList);
+    // set value
+    await prefs.setString(MyApp.storageTodolist, todoListJson);
+  }
+
 
   @override
   Widget build(BuildContext context) {
+
     if (currentStatus == 'undone') {
       displayedTasks = todoList.where((element) => !element.status).toList();
     } else if (currentStatus == 'done') {
@@ -88,6 +118,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 onChanged: (value) {
                   setState(() {
                     displayedTasks[index].status = !displayedTasks[index].status;
+                    _saveTaskList();
                   });
                 },
               ),
@@ -108,6 +139,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           todoList[taskIndex] = todoList[taskIndex - 1];
                           todoList[taskIndex - 1] = temp;
                         }
+                        _saveTaskList();
                       });
                     },
                     icon: const Icon(
@@ -122,6 +154,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           var temp = todoList[taskIndex];
                           todoList[taskIndex] = todoList[taskIndex + 1];
                           todoList[taskIndex + 1] = temp;
+                          _saveTaskList();
                         }
                       });
                     },
@@ -134,6 +167,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     onPressed: () {
                       setState(() {
                         todoList.removeAt(taskIndex);
+                        _saveTaskList();
                       });
                     },
                     icon: const Icon(
@@ -148,7 +182,6 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       );
     });
-
     void _onReorder(int oldIndex, int newIndex) {
       setState(() {
         oldIndex = todoList.indexOf(displayedTasks[oldIndex]);
@@ -158,6 +191,7 @@ class _MyHomePageState extends State<MyHomePage> {
           todoList[oldIndex] = todoList[newIndex];
           todoList[newIndex] = temp;
         }
+        _saveTaskList();
       });
     }
 
@@ -204,6 +238,7 @@ class _MyHomePageState extends State<MyHomePage> {
           onPressed: () {
             setState(() {
               currentStatus = value;
+              _saveTaskList();
             });
           },
           child: Text('$value $taskCount'),
@@ -261,6 +296,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   if (addTaskText.text != '') {
                     todoList.add(task);
                   }
+                  _saveTaskList();
                 });
               },
               child: const Text('Add'),
@@ -292,3 +328,4 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
+
